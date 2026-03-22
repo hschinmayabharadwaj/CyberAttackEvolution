@@ -22,16 +22,16 @@ export default function CyberChat() {
   const [showSuggestions, setShowSuggestions] = useState(true);
 
   const suggestions = [
-    "Show me the threat evolution dashboard",
-    "What are the top predicted attack trends?",
-    "Show attack timeline for ransomware and AI-powered threats",
-    "Which industries are most at risk?",
-    "Show me the MITRE ATT&CK tactic distribution",
-    "Tell me about LLM-powered spear phishing attacks",
-    "Show the global threat landscape",
+    "Give me a complete threat overview",
+    "Show 24-month attack timeline for ransomware and AI-powered threats",
+    "What are the top predicted attack trends in the next 6 months?",
     "How have cyber threats evolved over time?",
+    "Show active attack patterns and their risk levels",
+    "Show MITRE ATT&CK tactic distribution",
     "Show severity distribution of current threats",
-    "What is the prediction for supply chain attacks?",
+    "Which industries are most at risk right now?",
+    "Show the global threat landscape",
+    "Summarize the top actions we should prioritize",
   ];
 
   useEffect(() => {

@@ -36,16 +36,16 @@ interface SidebarProps {
 }
 
 const navItems: { id: DashboardView; label: string; icon: typeof Shield; section?: string }[] = [
-  { id: "chat", label: "AI Assistant", icon: MessageSquare, section: "Intelligence" },
-  { id: "overview", label: "Dashboard", icon: Activity },
-  { id: "timeline", label: "Attack Timeline", icon: BarChart3, section: "Analysis" },
+  { id: "overview", label: "Overview", icon: Activity, section: "Start Here" },
+  { id: "timeline", label: "Attack Timeline", icon: BarChart3, section: "Core Analysis" },
   { id: "predictions", label: "Predictions", icon: Brain },
   { id: "evolution", label: "Evolution Tree", icon: GitBranch },
-  { id: "patterns", label: "Attack Patterns", icon: Shield },
-  { id: "severity", label: "Severity Dist.", icon: PieChart, section: "Metrics" },
+  { id: "patterns", label: "Attack Patterns", icon: Shield, section: "Threat Intelligence" },
   { id: "mitre", label: "MITRE ATT&CK", icon: Crosshair },
-  { id: "sectors", label: "Sector Risks", icon: Building2 },
+  { id: "severity", label: "Severity", icon: PieChart },
+  { id: "sectors", label: "Sector Risk", icon: Building2 },
   { id: "global", label: "Global Threats", icon: Globe },
+  { id: "chat", label: "AI Assistant", icon: MessageSquare, section: "Ask AI" },
 ];
 
 export default function Sidebar({ activeView, onViewChange }: SidebarProps) {
