@@ -3,13 +3,13 @@
 import { useMemo } from "react";
 import { generateEvolutionTree, ThreatEvolutionNode } from "@/lib/cyber-data";
 import { cn } from "@/lib/utils";
-import { GitBranch, Calendar, AlertTriangle } from "lucide-react";
+import { GitBranch, Calendar } from "lucide-react";
 
 interface ThreatEvolutionTreeProps {
   title?: string;
 }
 
-function TreeNode({ node, children, depth }: { node: ThreatEvolutionNode; children: ThreatEvolutionNode[]; depth: number }) {
+function TreeNode({ node, childNodes, depth }: { node: ThreatEvolutionNode; childNodes: ThreatEvolutionNode[]; depth: number }) {
   const severityColor =
     node.severity >= 9 ? "from-red-500 to-red-700" :
     node.severity >= 7 ? "from-orange-500 to-orange-700" :
@@ -56,9 +56,9 @@ function TreeNode({ node, children, depth }: { node: ThreatEvolutionNode; childr
         <p className="mt-2 text-[11px] text-slate-400 leading-relaxed">{node.description}</p>
       </div>
 
-      {children.length > 0 && (
+      {childNodes.length > 0 && (
         <div className="ml-6 mt-2 pl-4 border-l-2 border-cyan-500/20 space-y-2">
-          {children.map((child) => (
+          {childNodes.map((child) => (
             <TreeNodeWrapper key={child.id} node={child} depth={depth + 1} />
           ))}
         </div>
@@ -69,9 +69,9 @@ function TreeNode({ node, children, depth }: { node: ThreatEvolutionNode; childr
 
 function TreeNodeWrapper({ node, depth }: { node: ThreatEvolutionNode; depth: number }) {
   const allNodes = useMemo(() => generateEvolutionTree(), []);
-  const children = allNodes.filter((n) => n.parent === node.id);
+  const childNodes = allNodes.filter((n) => n.parent === node.id);
 
-  return <TreeNode node={node} children={children} depth={depth} />;
+  return <TreeNode node={node} childNodes={childNodes} depth={depth} />;
 }
 
 export default function ThreatEvolutionTree({ title = "Threat Evolution Lineage" }: ThreatEvolutionTreeProps) {

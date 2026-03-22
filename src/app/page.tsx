@@ -19,7 +19,7 @@ function getOrCreateUserKey(): string {
 }
 
 export default function Home() {
-  const [activeView, setActiveView] = useState<DashboardView>("chat");
+  const [activeView, setActiveView] = useState<DashboardView>("overview");
 
   const apiKey = process.env.NEXT_PUBLIC_TAMBO_API_KEY || "";
   const userKey = useMemo(() => getOrCreateUserKey(), []);
@@ -41,16 +41,16 @@ export default function Home() {
           <header className="flex items-center justify-between px-6 py-3 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
             <div>
               <h2 className="text-sm font-bold text-white">
-                {activeView === "chat" && "AI Threat Intelligence Assistant"}
-                {activeView === "overview" && "Threat Intelligence Dashboard"}
-                {activeView === "timeline" && "Attack Trend Timeline"}
-                {activeView === "predictions" && "Predictive Threat Analysis"}
-                {activeView === "evolution" && "Threat Evolution Lineage"}
-                {activeView === "patterns" && "Active Attack Patterns"}
-                {activeView === "severity" && "Severity Distribution"}
-                {activeView === "mitre" && "MITRE ATT&CK Analysis"}
-                {activeView === "sectors" && "Sector Risk Assessment"}
-                {activeView === "global" && "Global Threat Landscape"}
+                {activeView === "overview" && "Overview"}
+                {activeView === "timeline" && "Attack Timeline"}
+                {activeView === "predictions" && "Predictions"}
+                {activeView === "evolution" && "Evolution Tree"}
+                {activeView === "patterns" && "Attack Patterns"}
+                {activeView === "mitre" && "MITRE ATT&CK"}
+                {activeView === "severity" && "Severity"}
+                {activeView === "sectors" && "Sector Risk"}
+                {activeView === "global" && "Global Threats"}
+                {activeView === "chat" && "AI Assistant"}
               </h2>
               <p className="text-[11px] text-slate-500">
                 Cyber Attack Pattern Evolution Model • Powered by Time-Series AI
