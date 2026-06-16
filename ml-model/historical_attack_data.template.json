@@ -1,0 +1,12 @@
+{
+  "ransomware": [],
+  "apt": [],
+  "phishing": [],
+  "supply_chain": [],
+  "zero_day": [],
+  "ddos": [],
+  "cryptojacking": [],
+  "insider_threat": [],
+  "iot_exploit": [],
+  "ai_powered": []
+}
