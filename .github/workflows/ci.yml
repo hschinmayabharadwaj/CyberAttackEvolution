@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master", "new-branch"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and run tests with docker-compose
+        run: |
+              docker-compose -f docker-compose.yml up --build --abort-on-container-exit --exit-code-from app
+
+      - name: Generate coverage
+        run: npm run test:coverage
