@@ -321,11 +321,17 @@ function classifyCveCategory(description: string): AttackCategory {
   return bestCategory;
 }
 
-function cvssToSeverity(score: number): "critical" | "high" | "medium" | "low" {
+export function cvssToSeverity(score: number): "critical" | "high" | "medium" | "low" {
   if (score >= 9.0) return "critical";
   if (score >= 7.0) return "high";
   if (score >= 4.0) return "medium";
   return "low";
+}
+
+// ---- CACHE HELPERS FOR TESTING ----
+
+export function clearDataCache(): void {
+  dataCache.clear();
 }
 
 // ---- DATA GENERATOR FUNCTIONS (API-backed with fallback) ----
