@@ -31,14 +31,31 @@ def main():
     print("=" * 70)
     print()
 
-    # Initialize model (expects original historical data file)
-    try:
-        model = CyberAttackEvolutionModel(lookback_months=24)
-    except (FileNotFoundError, ValueError) as error:
-        print(f"✗ Initialization failed: {error}")
-        print("  Provide original data in historical_attack_data.json")
-        print("  Use historical_attack_data.template.json as the schema reference")
-        return
+    # CLI: allow loading from a saved pickle via env var or arg
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Cyber Attack Pattern Evolution Model runner")
+    parser.add_argument("--load", help="Path to a saved model pickle to load instead of training", default=None)
+    parser.add_argument("--lookback", type=int, help="Lookback months to load historical data", default=24)
+    args = parser.parse_args()
+
+    model = None
+    if args.load:
+        try:
+            model = CyberAttackEvolutionModel.load_from_pickle(args.load)
+            print(f"✓ Loaded model from {args.load}")
+        except Exception as error:
+            print(f"✗ Failed to load model from pickle: {error}")
+
+    if model is None:
+        # Initialize model (expects original historical data file)
+        try:
+            model = CyberAttackEvolutionModel(lookback_months=args.lookback)
+        except (FileNotFoundError, ValueError) as error:
+            print(f"✗ Initialization failed: {error}")
+            print("  Provide original data in historical_attack_data.json")
+            print("  Use historical_attack_data.template.json as the schema reference")
+            return
 
     print(f"✓ Historical data loaded: {sum(len(v) for v in model.historical_data.values())} data points")
     print(f"  Categories: {len(model.historical_data)}")
@@ -88,6 +105,13 @@ def main():
     with open("threat_analysis_output.json", "w") as f:
         json.dump(summary, f, indent=2)
     print("\n✓ Full analysis exported to threat_analysis_output.json")
+
+    # Save trained model to pickle for reuse
+    try:
+        out = model.save_model()
+        print(f"\n✓ Trained model saved to: {out}")
+    except Exception as e:
+        print(f"✗ Failed to save trained model: {e}")
 
 
 if __name__ == "__main__":

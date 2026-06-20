@@ -1,4 +1,6 @@
 import json
+import os
+import pickle
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
@@ -145,6 +147,79 @@ class CyberAttackEvolutionModel:
 
         self.trained = True
         return metrics
+
+    def _default_model_dir(self) -> Path:
+        root = self._resolve_model_root()
+        model_dir = Path(self.config.get("model_output_dir", root / "trained_models"))
+        try:
+            model_dir = Path(model_dir)
+        except Exception:
+            model_dir = root / "trained_models"
+        return model_dir
+
+    def save_model(self, path: Optional[str] = None) -> Path:
+        """
+        Save the trained model state to a pickle (.pkl) file.
+
+        If `path` is None, uses the `model_output_dir` and `model_filename` from config
+        or defaults to `trained_models/cyber_model_<timestamp>.pkl`.
+        Returns the Path to the saved file.
+        """
+        if not self.trained:
+            # Ensure model is trained before saving
+            self.train()
+
+        model_dir = self._default_model_dir()
+        model_dir.mkdir(parents=True, exist_ok=True)
+
+        if path:
+            out_path = Path(path)
+        else:
+            filename = self.config.get("model_filename") or f"cyber_model_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pkl"
+            out_path = model_dir / filename
+
+        # Serialize only necessary state: config, lookback_months, historical_data, trained flag
+        payload = {
+            "config": self.config,
+            "lookback_months": self.lookback_months,
+            "historical_data": {k: [asdict(p) for p in v] for k, v in self.historical_data.items()},
+            "trained": self.trained,
+        }
+
+        with out_path.open("wb") as f:
+            pickle.dump(payload, f)
+
+        return out_path
+
+    @classmethod
+    def load_from_pickle(cls, path: str) -> "CyberAttackEvolutionModel":
+        """Load a pickled model state and return a `CyberAttackEvolutionModel` instance.
+
+        The method will populate `historical_data` and `config` from the pickle.
+        """
+        p = Path(path)
+        if not p.exists():
+            raise FileNotFoundError(f"Pickle file not found: {p}")
+
+        with p.open("rb") as f:
+            payload = pickle.load(f)
+
+        # Create a new instance without triggering file loads by passing dummy paths
+        inst = cls(lookback_months=payload.get("lookback_months", 24))
+
+        # Overwrite loaded config and historical_data
+        inst.config = payload.get("config", inst.config)
+        raw_hist = payload.get("historical_data", {})
+        inst.historical_data = {}
+        for k, points in raw_hist.items():
+            inst.historical_data[k] = [
+                # reconstruct TimeSeriesPoint dataclass
+                TimeSeriesPoint(date=p["date"], category=p["category"], frequency=int(p["frequency"]), severity_avg=float(p["severity_avg"]))
+                for p in points
+            ]
+
+        inst.trained = bool(payload.get("trained", True))
+        return inst
 
     def predict(self, horizon_months: int = 6) -> List[PredictionResult]:
         """
