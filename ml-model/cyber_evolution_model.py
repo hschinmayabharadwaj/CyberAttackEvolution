@@ -33,6 +33,7 @@ def main():
 
     # CLI: allow loading from a saved pickle via env var or arg
     import argparse
+    from pathlib import Path
 
     parser = argparse.ArgumentParser(description="Cyber Attack Pattern Evolution Model runner")
     parser.add_argument("--load", help="Path to a saved model pickle to load instead of training", default=None)
@@ -40,10 +41,20 @@ def main():
     args = parser.parse_args()
 
     model = None
+
+    # Try loading from existing trained .pkl first
     if args.load:
+        load_path = args.load
+    else:
+        # Check for the latest trained model pickle in trained_models/
+        model_root = Path(__file__).resolve().parent
+        pkl_files = sorted(model_root.glob("trained_models/cyber_model_*.pkl"))
+        load_path = str(pkl_files[-1]) if pkl_files else None
+
+    if load_path:
         try:
-            model = CyberAttackEvolutionModel.load_from_pickle(args.load)
-            print(f"✓ Loaded model from {args.load}")
+            model = CyberAttackEvolutionModel.load_from_pickle(load_path)
+            print(f"✓ Loaded model from {load_path}")
         except Exception as error:
             print(f"✗ Failed to load model from pickle: {error}")
 
