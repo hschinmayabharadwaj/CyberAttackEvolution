@@ -27,5 +27,8 @@ jobs:
         run: |
               docker compose -f docker-compose.yml up --build --abort-on-container-exit --exit-code-from app
 
+      - name: Install dependencies for coverage
+        run: npm ci
+
       - name: Generate coverage
         run: npm run test:coverage
