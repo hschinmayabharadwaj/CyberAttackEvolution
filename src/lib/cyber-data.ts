@@ -159,8 +159,9 @@ export async function fetchNvdCves(
     if (!res.ok) throw new Error(`NVD API ${res.status}`);
     const json = await res.json();
 
-    const items: NvdCveItem[] = (json.vulnerabilities || []).map(
-      (v: Record<string, unknown>) => {
+    const items: NvdCveItem[] = (json.vulnerabilities || [])
+      .filter((v: Record<string, unknown>) => v.cve != null)
+      .map((v: Record<string, unknown>) => {
         const cve = v.cve as Record<string, unknown>;
         const metrics = cve.metrics as Record<string, unknown> | undefined;
         const cvssV31 = metrics?.cvssMetricV31 as Array<Record<string, unknown>> | undefined;
@@ -177,8 +178,7 @@ export async function fetchNvdCves(
           attackVector: (cvssData?.attackVector as string) || "UNKNOWN",
           references: refs?.map((r) => r.url).slice(0, 3) || [],
         };
-      }
-    );
+      });
 
     setCache(cacheKey, items, 30 * 60 * 1000); // 30 min cache
     return items;
