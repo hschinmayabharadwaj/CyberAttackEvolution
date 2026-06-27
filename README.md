@@ -42,10 +42,7 @@ Open http://localhost:3000
 
 ### 4) (Optional) Run the Python model
 
-```bash
-cd ml-model
-python cyber_evolution_model.py
-```
+Open the notebook in `ml-model/train_model.ipynb`, then run the cells to train the model and save a `.pkl` file.
 
 If `historical_attack_data.json` is not present, start from `historical_attack_data.template.json`.
 

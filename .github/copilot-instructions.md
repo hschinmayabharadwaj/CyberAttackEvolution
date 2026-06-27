@@ -23,4 +23,4 @@
 ## Development
 - Run `npm run dev` to start
 - Tambo API key required in `.env.local`
-- Python model can run standalone: `python ml-model/cyber_evolution_model.py`
+- Python model training is available via `ml-model/train_model.ipynb`
