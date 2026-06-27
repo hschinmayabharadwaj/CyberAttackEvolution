@@ -1,12 +1,11 @@
+import glob
 import json
-import os
 import pickle
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from .attack_category import AttackCategory
 from .schemas import EvolutionEvent, PredictionResult, TimeSeriesPoint
 
 
@@ -24,7 +23,6 @@ class CyberAttackEvolutionModel:
     def __init__(
         self,
         lookback_months: int = 24,
-        data_file_path: Optional[str] = None,
         config_file_path: Optional[str] = None,
     ):
         self.lookback_months = lookback_months
@@ -32,7 +30,6 @@ class CyberAttackEvolutionModel:
         self.config: Dict = {}
         self.trained = False
         self._load_config(config_file_path)
-        self._load_historical_data(data_file_path)
 
     def _resolve_model_root(self) -> Path:
         return Path(__file__).resolve().parent.parent
@@ -46,49 +43,6 @@ class CyberAttackEvolutionModel:
 
         with config_path.open("r", encoding="utf-8") as config_file:
             self.config = json.load(config_file)
-
-    def _load_historical_data(self, data_file_path: Optional[str]):
-        data_path = Path(data_file_path) if data_file_path else self._resolve_model_root() / "historical_attack_data.json"
-        if not data_path.exists():
-            raise FileNotFoundError(
-                f"Historical data file not found: {data_path}. Provide original historical data (no synthetic generation is used)."
-            )
-
-        with data_path.open("r", encoding="utf-8") as data_file:
-            raw_data = json.load(data_file)
-
-        if not isinstance(raw_data, dict) or not raw_data:
-            raise ValueError("Historical data must be a non-empty object keyed by category.")
-
-        known_categories = {category.value for category in AttackCategory}
-        loaded_categories = 0
-
-        for category, points in raw_data.items():
-            if category not in known_categories:
-                continue
-            if not isinstance(points, list) or not points:
-                continue
-
-            parsed_points: List[TimeSeriesPoint] = []
-            for point in points[-self.lookback_months :]:
-                if not isinstance(point, dict):
-                    continue
-                if "date" not in point or "frequency" not in point or "severity_avg" not in point:
-                    continue
-
-                parsed_points.append(TimeSeriesPoint(
-                    date=str(point["date"]),
-                    category=category,
-                    frequency=max(1, int(point["frequency"])),
-                    severity_avg=float(point["severity_avg"]),
-                ))
-
-            if parsed_points:
-                self.historical_data[category] = parsed_points
-                loaded_categories += 1
-
-        if loaded_categories == 0:
-            raise ValueError("No valid historical data found for known attack categories.")
 
     def train(self) -> Dict:
         """
@@ -204,7 +158,6 @@ class CyberAttackEvolutionModel:
         with p.open("rb") as f:
             payload = pickle.load(f)
 
-        # Create a new instance without triggering file loads by passing dummy paths
         inst = cls(lookback_months=payload.get("lookback_months", 24))
 
         # Overwrite loaded config and historical_data
@@ -220,6 +173,18 @@ class CyberAttackEvolutionModel:
 
         inst.trained = bool(payload.get("trained", True))
         return inst
+
+    @classmethod
+    def auto_load(cls, lookback_months: int = 24) -> "CyberAttackEvolutionModel":
+        """Auto-discover the latest trained .pkl in `trained_models/` and load it."""
+        inst = cls(lookback_months=lookback_months)
+        model_dir = inst._default_model_dir()
+        pkl_files = sorted(glob.glob(str(model_dir / "cyber_model_*.pkl")))
+        if not pkl_files:
+            raise FileNotFoundError(
+                f"No trained .pkl found in {model_dir}. Run train_model.ipynb first."
+            )
+        return cls.load_from_pickle(pkl_files[-1])
 
     def predict(self, horizon_months: int = 6) -> List[PredictionResult]:
         """

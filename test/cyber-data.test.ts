@@ -16,7 +16,7 @@ import {
   fetchSeverityFromNvd,
   fetchMitreTacticDistribution,
   fetchAttackPatternsFromKev,
-  classifyCveCategory,
+  // classifyCveCategory,v
   cvssToSeverity,
   clearDataCache,
 } from "../src/lib/cyber-data";
@@ -347,6 +347,11 @@ describe("fetchNvdCves", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("returns cached data on second call within TTL", async () => {
@@ -474,6 +479,11 @@ describe("fetchCisaKev", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("returns cached entries on second call", async () => {
@@ -538,6 +548,11 @@ describe("fetchMitreAttack", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("returns cached result on second call", async () => {
@@ -681,6 +696,11 @@ describe("fetchTimeSeriesFromNvd", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("falls back to generated data when API returns empty", async () => {
@@ -715,6 +735,11 @@ describe("fetchSeverityFromNvd", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("falls back to generated distribution on error", async () => {
@@ -754,6 +779,11 @@ describe("fetchMitreTacticDistribution", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("falls back to generated data on error", async () => {
@@ -807,6 +837,11 @@ describe("fetchAttackPatternsFromKev", () => {
   beforeEach(() => {
     clearDataCache();
     global.fetch = vi.fn();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("returns 8 patterns from fallback generator when both APIs return empty", async () => {
