@@ -42,9 +42,9 @@ Open http://localhost:3000
 
 ### 4) (Optional) Run the Python model
 
-Open the notebook in `ml-model/train_model.ipynb`, then run the cells to train the model and save a `.pkl` file.
+Open the notebook in `ml-model/train_model.ipynb` and run the cells. The notebook automatically loads the latest trained `.pkl` file from `ml-model/trained_models/`. To retrain, call `model.train()` and then `model.save_model()`.
 
-If `historical_attack_data.json` is not present, start from `historical_attack_data.template.json`.
+> **Note:** The model exclusively uses `.pkl` files — no raw JSON input is required.
 
 ## App flow (simple)
 
@@ -68,18 +68,6 @@ If `historical_attack_data.json` is not present, start from `historical_attack_d
 - Charts: Recharts
 - Optional backend model: Python deterministic time-series baseline
 
-## Project layout
-
-```text
-cyber-attack-evolution/
-├── src/
-│   ├── app/                 # Next.js app shell
-│   ├── components/          # Sidebar, chat, dashboard, cyber widgets
-│   └── lib/                 # Data generators/fetchers + Tambo config
-├── ml-model/                # Python model + configs + templates
-├── public/
-└── README.md
-```
 
 ## License
 
