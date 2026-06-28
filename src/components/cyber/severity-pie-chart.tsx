@@ -49,7 +49,11 @@ export default function SeverityPieChart({ title = "Attack Severity Distribution
                   color: "#e2e8f0",
                   fontSize: "12px",
                 }}
-                formatter={(value: number | undefined) => [`${value ?? 0}%`, "Percentage"]}
+                formatter={(value) => {
+                  const numericValue = Array.isArray(value) ? Number(value[0] ?? 0) : Number(value ?? 0);
+
+                  return [`${numericValue}%`, "Percentage"] as [string, string];
+                }}
               />
             </PieChart>
           </ResponsiveContainer>

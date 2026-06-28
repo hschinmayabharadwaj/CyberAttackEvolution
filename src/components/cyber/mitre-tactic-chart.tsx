@@ -49,7 +49,11 @@ export default function MitreTacticChart({ title = "MITRE ATT&CK Tactic Distribu
                 color: "#e2e8f0",
                 fontSize: "12px",
               }}
-              formatter={(value: number | string | undefined) => [Number(value ?? 0).toLocaleString(), "Incidents"]}
+              formatter={(value) => {
+                const numericValue = Array.isArray(value) ? Number(value[0] ?? 0) : Number(value ?? 0);
+
+                return [numericValue.toLocaleString(), "Incidents"] as [string, string];
+              }}
             />
             <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
               {data.map((_, index) => (
